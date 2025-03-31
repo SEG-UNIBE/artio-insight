@@ -1,4 +1,14 @@
 services:
+  grafana:
+    image: grafana/grafana
+    container_name: artio_grafana
+    environment:
+      # user is `admin`
+      - GF_SECURITY_ADMIN_PASSWORD=supersecret
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
   db:
     build:
       context: .
@@ -15,3 +25,4 @@ services:
 
 volumes:
   artio_data:
+  grafana_data:
