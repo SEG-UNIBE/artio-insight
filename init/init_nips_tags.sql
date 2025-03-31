@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS nips_tag_current (
+CREATE TABLE IF NOT EXISTS current_nip_tags (
     nip VARCHAR(255) PRIMARY KEY NOT NULL,
     final BOOLEAN NOT NULL DEFAULT false,
     draft BOOLEAN NOT NULL DEFAULT false,

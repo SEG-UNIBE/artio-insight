@@ -70,7 +70,7 @@ func getTagsFromText(text string) ([]string, error) {
 	}
 
 	// Extracts the tags from the line
-	re_words := regexp.MustCompile("`\\w+`")
+	re_words := regexp.MustCompile("[a-zA-Z]+")
 	matches := re_words.FindAllString(line_matches[0], -1)
 
 	tags = append(tags, matches...)
@@ -79,7 +79,7 @@ func getTagsFromText(text string) ([]string, error) {
 }
 
 // Extracts the tags from the NIPs in the GitHub repository
-func GetCurrentNipsTags() (map[string][]string, error) {
+func GetNipsTags() (map[string][]string, error) {
 	nip_texts := map[string][]string{}
 	var tmp_text string
 	nips, err := getNips()
