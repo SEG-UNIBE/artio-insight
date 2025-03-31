@@ -14,5 +14,4 @@ services:
       - artio_data:/var/lib/postgresql/data
 
 volumes:
-  grafana_data:
   artio_data:
