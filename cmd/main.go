@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	tags := scripts.GetCurrentNipsTags()
+	tags,_ := scripts.GetCurrentNipsTags()
 
 	for nip, tag := range tags {
 		fmt.Println(nip, ":", tag)
