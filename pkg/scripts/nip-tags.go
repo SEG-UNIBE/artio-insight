@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/gocolly/colly"
+	"github.com/schollz/progressbar/v3"
 )
 
 const (
@@ -87,13 +88,19 @@ func GetCurrentNipsTags() (map[string][]string, error) {
 		return nil, fmt.Errorf("error fetching NIPs: %w", err)
 	}
 
+	bar := progressbar.NewOptions(
+		len(nips), 
+		progressbar.OptionSetDescription("Extracting NIPs' tags "),
+		progressbar.OptionShowCount())
 	for _, nip := range nips {
+		bar.Add(1)
+
 		nip_texts[nip] = []string{}
-		res, err := http.Get(RAW_FILES_URL + nip + ".md")
-		if err != nil {
-			fmt.Println("error fetching file", nip, " :", err)
-			continue
+		res, _ := http.Get(RAW_FILES_URL + nip + ".md")
+		if res.StatusCode != 200 {
+			fmt.Println("error fetching file", nip, " :", res.Status)
 		}
+
 		content, err := io.ReadAll(res.Body)
 		res.Body.Close()
 		if err != nil {
