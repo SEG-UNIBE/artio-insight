@@ -19,10 +19,10 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: artio_db
     ports:
-      - "5432:5432"
+      - "5000:5432"
     volumes:
-      - artio_data:/var/lib/postgresql/data
+      - artio_insight_data:/var/lib/postgresql/data
 
 volumes:
-  artio_data:
+  artio_insight_data:
   grafana_data:
