@@ -30,3 +30,6 @@ go.work.sum
 .vscode/
 .vscode
 *.iml
+
+# Misc Files
+TODO.md
