@@ -4,15 +4,30 @@ import (
 	m "artio-insight/models"
 	s "artio-insight/pkg/scripts"
 	"fmt"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	g "gorm.io/gorm"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+		return
+	}
+
+	db_user := os.Getenv("DB_USER")
+	db_password := os.Getenv("DB_PASSWORD")
+	db_name := os.Getenv("DB_NAME")
+	db_port := os.Getenv("DB_PORT")
+
+	DSN := fmt.Sprintf("user=%s password=%s dbname=%s host=localhost port=%s sslmode=disable TimeZone=Europe/Zurich", db_user, db_password, db_name, db_port)
+
 	db, err := g.Open(postgres.New(postgres.Config{
-		DSN: "user=postgres password=admin dbname=artio_db host=localhost port=5432 sslmode=disable TimeZone=Europe/Zurich",
+		DSN: DSN,
 		PreferSimpleProtocol: true,
 	}), &g.Config{})
 

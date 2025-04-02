@@ -1,28 +1,28 @@
 services:
   grafana:
     image: grafana/grafana
-    container_name: artio_grafana
+    container_name: ${GF_CONTAINER_NAME}
     environment:
-      # user is `admin`
-      - GF_SECURITY_ADMIN_PASSWORD=supersecret
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_PASSWORD}
     ports:
-      - "3000:3000"
+      - ${GF_PORT}:3000
     volumes:
-      - grafana_data:/var/lib/grafana
-  db:
+      - artio_insight_gf_data:/var/lib/grafana
+
+  database:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: artio_db
+    container_name: ${DB_CONTAINER_NAME}
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: artio_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - ${DB_PORT}:5432
     volumes:
-      - artio_data:/var/lib/postgresql/data
+      - artio_insight_db_data:/var/lib/postgresql/data
 
 volumes:
-  artio_data:
-  grafana_data:
+  artio_insight_gf_data:
+  artio_insight_db_data:
