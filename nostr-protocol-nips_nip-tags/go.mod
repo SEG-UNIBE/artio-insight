@@ -1,4 +1,4 @@
-module artio-insight
+module nostr-protocol-nips_nip-tags
 
 go 1.24.1
 
