@@ -1,4 +1,4 @@
-package scripts
+package nipTags
 
 import (
 	"fmt"

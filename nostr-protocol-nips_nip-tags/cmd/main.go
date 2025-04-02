@@ -1,9 +1,9 @@
 package main
 
 import (
-	m "artio-insight/models"
-	s "artio-insight/pkg/scripts"
 	"fmt"
+	m "nostr-protocol-nips_nip-tags/models"
+	s "nostr-protocol-nips_nip-tags/pkg/nipTags"
 	"os"
 	"time"
 
@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
 	if err != nil {
 		fmt.Println("Error loading .env file")
 		return
