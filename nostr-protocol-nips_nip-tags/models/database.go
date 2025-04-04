@@ -19,17 +19,19 @@ func InitDB() error {
 	}
 
 	// Retrieve database parameters
-	db_user := os.Getenv("DB_USER")
-	db_password := os.Getenv("DB_PASSWORD")
-	db_name := os.Getenv("DB_NAME")
-	db_port := os.Getenv("DB_PORT")
-	db_host := os.Getenv("DB_HOST")
-	if db_user == "" || db_password == "" || db_name == "" || db_port == "" || db_host == "" {
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	dbPort := os.Getenv("DB_PORT")
+	dbHost := os.Getenv("DB_HOST")
+	dbSslmode := os.Getenv("DB_SSLMODE")
+	dbTimezone := os.Getenv("DB_TIMEZONE")
+	if dbUser == "" || dbPassword == "" || dbName == "" || dbPort == "" || dbHost == "" || dbSslmode == "" || dbTimezone == "" {
 		return fmt.Errorf("one or more required database environment variables are empty")
 	}
 
 	// Open database connection
-	DSN := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable TimeZone=Europe/Zurich", db_user, db_password, db_name, db_host, db_port)
+	DSN := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=%s TimeZone=%s", dbUser, dbPassword, dbName, dbHost, dbPort, dbSslmode, dbTimezone)
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: DSN,
 		PreferSimpleProtocol: true,
