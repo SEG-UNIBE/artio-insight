@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	m "nostr-protocol-nips_nip-tags/models"
 	s "nostr-protocol-nips_nip-tags/pkg/nipTags"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/joho/godotenv"
 )
@@ -12,13 +13,13 @@ import (
 func main() {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		fmt.Println("Error loading .env file")
+		log.Error("could not load .env file")
 		return
 	}
 
 	err = m.InitDB()
 	if err != nil {
-		fmt.Println("Error initializing database:", err)
+		log.Error("could not initiate database connection: ", err)
 		return
 	}
 
@@ -30,9 +31,9 @@ func main() {
 
 		result := m.DB.Create(&nipTags)
 		if result.Error != nil {
-			fmt.Println("Error inserting data:", result.Error)
+			log.Error("error while inserting tags of NIP-", nip, " : ", result.Error)
 		}
 	}
 
-	fmt.Println("\nData inserted successfully")
+	log.Info("data insertion finished")
 }
