@@ -90,7 +90,7 @@ func GetNipsTags() (map[string][]string, error) {
 
 	bar := progressbar.NewOptions(
 		len(nips), 
-		progressbar.OptionSetDescription("Extracting NIPs' tags "),
+		progressbar.OptionSetDescription("Extracting NIP tags"),
 		progressbar.OptionShowCount())
 	for _, nip := range nips {
 		bar.Add(1)
@@ -98,19 +98,19 @@ func GetNipsTags() (map[string][]string, error) {
 		nip_texts[nip] = []string{}
 		res, _ := http.Get(RAW_FILES_URL + nip + ".md")
 		if res.StatusCode != 200 {
-			fmt.Println("error fetching file", nip, " :", res.Status)
+			fmt.Println("error fetching file", nip, ":", res.Status)
 		}
 
 		content, err := io.ReadAll(res.Body)
 		res.Body.Close()
 		if err != nil {
-			fmt.Println("error reading response body for", nip, " :", err)
+			fmt.Println("error reading response body for", nip, ":", err)
 			continue
 		}
 		tmp_text = string(content)
 		tags, err := getTagsFromText(tmp_text)
 		if err != nil {
-			fmt.Println("error extracting tags for", nip, " :", err)
+			fmt.Println("error extracting tags for", nip, ":", err)
 			continue
 		}
 		nip_texts[nip] = tags
