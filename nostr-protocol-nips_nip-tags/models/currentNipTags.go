@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Format used in the table `current_nip_tags`
 type CurrentNipTags struct {
 	Nip string
 	Final bool
@@ -16,7 +17,8 @@ type CurrentNipTags struct {
 	LastUpdated time.Time
 }
 
-func GetCurrentNipTags(nip string, lastUpdated time.Time, tags []string) (CurrentNipTags, error) {
+// Transforms the data retrieved from the github repo into a CurrentNipTags object
+func ToCurrentNipTags(nip string, lastUpdated time.Time, tags []string) (CurrentNipTags, error) {
 	cnt := CurrentNipTags{
 		Nip: nip,
 		Final: false,

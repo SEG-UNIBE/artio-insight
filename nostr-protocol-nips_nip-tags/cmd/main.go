@@ -1,53 +1,39 @@
 package main
 
 import (
-	"fmt"
 	m "nostr-protocol-nips_nip-tags/models"
 	s "nostr-protocol-nips_nip-tags/pkg/nipTags"
-	"os"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	g "gorm.io/gorm"
 )
 
 func main() {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		fmt.Println("Error loading .env file")
+		log.Error("could not load .env file")
 		return
 	}
 
-	db_user := os.Getenv("DB_USER")
-	db_password := os.Getenv("DB_PASSWORD")
-	db_name := os.Getenv("DB_NAME")
-	db_port := os.Getenv("DB_PORT")
-
-	DSN := fmt.Sprintf("user=%s password=%s dbname=%s host=localhost port=%s sslmode=disable TimeZone=Europe/Zurich", db_user, db_password, db_name, db_port)
-
-	db, err := g.Open(postgres.New(postgres.Config{
-		DSN: DSN,
-		PreferSimpleProtocol: true,
-	}), &g.Config{})
-
+	err = m.InitDB()
 	if err != nil {
-		fmt.Println("Error connecting to database:", err)
+		log.Error("could not initiate database connection: ", err)
 		return
 	}
-	fmt.Println("Connected to database")
 
 	tags,_ := s.GetNipsTags()
 	currentTime := time.Now()
 
 	for nip, tag := range tags {
-		nipTags,_ := m.GetCurrentNipTags(nip, currentTime, tag)
+		nipTags,_ := m.ToCurrentNipTags(nip, currentTime, tag)
 
-		result := db.Create(&nipTags)
+		result := m.DB.Create(&nipTags)
 		if result.Error != nil {
-			fmt.Println("Error inserting data:", result.Error)
+			log.Error("error while inserting tags of NIP-", nip, " : ", result.Error)
 		}
 	}
 
-	fmt.Println("\nData inserted successfully")
+	log.Info("data insertion finished")
 }
