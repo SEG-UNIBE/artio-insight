@@ -25,23 +25,75 @@ func main() {
 		return
 	}
 
-	tags,_ := s.GetNipsTags()
+	// TODO : run sql file here
+
+	// TODO : get this out of main
+	
+	rawTags,_ := s.GetNipsTags()
 	currentTime := time.Now()
 
-	for nip, tag := range tags {
-		nipTags,_ := m.ToCurrentNipTags(nip, currentTime, tag)
+	for nip, tags := range rawTags {
+		nipTags, currErr := m.ToCurrentNipTags(nip, currentTime, tags)
+		if currErr != nil {
+			log.Error(currErr)
+		}
 
-		curr := m.DB.First(&m.CurrentNipTags{}, nip)
-		if errors.Is(curr.Error, gorm.ErrRecordNotFound) {
-			log.Info("new nip found : NIP-", nip)
+		var dbNipTags m.CurrentNipTags
+		dbErr := m.DB.Table("current_nip_tags").Take(&dbNipTags, "nip = ?", nip)
+		if errors.Is(dbErr.Error, gorm.ErrRecordNotFound) {
+			log.Info("creating nip tags for NIP-", nip)
+			
 			result := m.DB.Create(&nipTags)
 			if result.Error != nil {
 				log.Error("error while inserting tags of new NIP-", nip, " : ", result.Error)
 			}
-			continue
-		} else if curr.Error != nil {
-			log.Error("could not check if nip ", nip, " exists in database: ", curr.Error)
-			continue
+			
+			logTags, logErr := m.ToLogNipTagsList(nipTags)
+			if logErr != nil {
+				log.Error(logErr)
+			}
+			var logResult *gorm.DB
+			for _, logTag := range logTags {
+				logResult = m.DB.Create(&logTag)
+				if logResult.Error != nil {
+					log.Error("error while inserting log tag \"", logTag.Tag,"\" of new NIP-", nip, " : ", logResult.Error)
+				}
+			}
+		} else if dbErr.Error != nil {
+			log.Error("could not check if nip ", nip, " exists in database: ", dbErr.Error)
+		} else  {
+			if dbNipTags.Final != nipTags.Final {
+				newDbLogTag, _ := m.ToLogNipTags("final", nipTags)
+				log.Info("updating final tag for NIP-", nip)
+				m.DB.Create(newDbLogTag)
+			}
+			if dbNipTags.Draft != nipTags.Draft {
+				newDbLogTag, _ := m.ToLogNipTags("draft", nipTags)
+				log.Info("updating draft tag for NIP-", nip)
+				m.DB.Create(newDbLogTag)
+			}
+			if dbNipTags.Mandatory != nipTags.Mandatory {
+				newDbLogTag, _ := m.ToLogNipTags("mandatory", nipTags)
+				log.Info("updating mandatory tag for NIP-", nip)
+				m.DB.Create(newDbLogTag)
+			}
+			if dbNipTags.Optional != nipTags.Optional {
+				newDbLogTag, _ := m.ToLogNipTags("optional", nipTags)
+				log.Info("updating optional tag for NIP-", nip)
+				m.DB.Create(newDbLogTag)
+			}
+			if dbNipTags.Recommended != nipTags.Recommended {
+				newDbLogTag, _ := m.ToLogNipTags("recommended", nipTags)
+				log.Info("updating recommended tag for NIP-", nip)
+				m.DB.Create(newDbLogTag)
+			}
+			if dbNipTags.Unrecommended != nipTags.Unrecommended {
+				newDbLogTag, _ := m.ToLogNipTags("unrecommended", nipTags)
+				log.Info("updating unrecommended tag for NIP-", nip)
+				m.DB.Create(newDbLogTag)
+			}
+
+			m.DB.Save(&nipTags)
 		}
 	}
 
