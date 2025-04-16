@@ -9,3 +9,10 @@ CREATE TABLE IF NOT EXISTS current_nip_tags (
     last_updated DATE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS log_nip_tags (
+    nip VARCHAR(255) NOT NULL,
+    tag VARCHAR(255) NOT NULL,
+    tag_status BOOLEAN NOT NULL,
+    update_time DATE NOT NULL,
+    PRIMARY KEY (nip, tag, update_time)
+)
