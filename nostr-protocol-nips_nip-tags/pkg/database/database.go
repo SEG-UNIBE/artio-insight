@@ -11,12 +11,14 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+const SQL_FILE_PATH = "init/init.sql"
+
 var DB *gorm.DB
 
 func InitDB() error {
 	// Check if database already exists
 	if DB != nil {
-		return fmt.Errorf("DB already initialized")
+		return fmt.Errorf("database already initialized")
 	}
 
 	// Retrieve database parameters
@@ -44,7 +46,29 @@ func InitDB() error {
 	}
 
 	DB = db
-	log.Info("Connected to database")
+	log.Info("connected to database")
 
+	// Add the schema to the database
+	err = DB.Exec("BEGIN;").Error
+	if err != nil {
+		return err
+	}
+
+	sqlContent, readErr := os.ReadFile(SQL_FILE_PATH)
+	if readErr != nil {
+		return readErr
+	}
+
+	err = DB.Exec(string(sqlContent)).Error
+	if err != nil {
+		DB.Exec("ROLLBACK;")
+		return err
+	}
+
+	err = DB.Exec("COMMIT;").Error
+	if err != nil {
+		return err
+	}
+	
 	return nil
 }
