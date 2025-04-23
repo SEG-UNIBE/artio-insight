@@ -3,6 +3,9 @@ package models
 import (
 	"fmt"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 // Format used in the table `current_nip_tags`
@@ -50,5 +53,24 @@ func ToCurrentNipTags(nip string, lastUpdated time.Time, tags []string) (Current
 		}
 	}
 
+	log.Error(err)
 	return cnt, err
+}
+
+// Add the current nip tags to the database
+func AddCurrentNipTags(db *gorm.DB, nipTags CurrentNipTags) {
+	log.Info("creating nip tags for NIP-", nipTags.Nip)
+
+	res := db.Create(&nipTags)
+	if res.Error != nil {
+		log.Error("error while inserting tags of new NIP-", nipTags.Nip, " : ", res.Error)
+	}
+}
+
+// Update the tags and time of the given nip in the database
+func UpdateCurrentNipTags(db *gorm.DB, nipTags CurrentNipTags) {
+	res := db.Where("nip = ?", nipTags.Nip).Save(&nipTags)
+	if res.Error != nil {
+		log.Error("error while updating tags of NIP-", nipTags.Nip, " : ", res.Error)
+	}
 }
