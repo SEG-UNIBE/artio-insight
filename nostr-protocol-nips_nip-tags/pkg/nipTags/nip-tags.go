@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/gocolly/colly"
-	"github.com/schollz/progressbar/v3"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -31,6 +31,7 @@ func isNip(lookup string) bool {
 	return true
 }
 
+// TODO : check if no internet / nothing retrieved
 // Fetches the list of files in the github repo and extracts the NIPs
 func getNips() ([]string, error) {
 	nips := []string{}
@@ -88,13 +89,8 @@ func GetNipsTags() (map[string][]string, error) {
 		return nil, fmt.Errorf("error fetching NIPs: %w", err)
 	}
 
-	bar := progressbar.NewOptions(
-		len(nips), 
-		progressbar.OptionSetDescription("Extracting NIP tags"),
-		progressbar.OptionShowCount())
+	log.Info("extracting the tags of ", len(nips), " NIPs...")
 	for _, nip := range nips {
-		bar.Add(1)
-
 		nip_texts[nip] = []string{}
 		res, _ := http.Get(RAW_FILES_URL + nip + ".md")
 		if res.StatusCode != 200 {
