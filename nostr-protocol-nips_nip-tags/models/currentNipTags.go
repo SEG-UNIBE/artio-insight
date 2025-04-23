@@ -50,10 +50,10 @@ func ToCurrentNipTags(nip string, lastUpdated time.Time, tags []string) (Current
 				cnt.Unrecommended = true
 			default:
 				err = fmt.Errorf("unknown tag: %s", t)
+				log.Error(err)
 		}
 	}
 
-	log.Error(err)
 	return cnt, err
 }
 
