@@ -42,7 +42,6 @@ func main() {
 
 		// If a new tag, add everything
 		if errors.Is(dbErr.Error, gorm.ErrRecordNotFound) {
-			log.Info("creating nip tags for NIP-", nip)
 			hasModified = true
 			
 			m.AddCurrentNipTags(db.DB, newNipTags)
@@ -52,7 +51,10 @@ func main() {
 			log.Error("could not check if nip ", nip, " exists in database: ", dbErr.Error)
 		// If nip exists, only add the difference from previous pooling
 		} else  {
-			hasModified = m.AddNewLogNipTags(db.DB, newNipTags, oldNipTags)
+			hasUpdated := m.AddNewLogNipTags(db.DB, newNipTags, oldNipTags)
+			if hasUpdated {
+				hasModified = true
+			}
 			m.UpdateCurrentNipTags(db.DB, newNipTags)
 		}
 	}
