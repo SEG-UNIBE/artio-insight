@@ -31,7 +31,6 @@ func isNip(lookup string) bool {
 	return true
 }
 
-// TODO : check if no internet / nothing retrieved
 // Fetches the list of files in the github repo and extracts the NIPs
 func getNips() ([]string, error) {
 	nips := []string{}
@@ -45,6 +44,10 @@ func getNips() ([]string, error) {
 	})
 
 	err := collector.Visit(REPO_URL)
+
+	if nips == nil && err == nil {
+		return nil, fmt.Errorf("no NIPs found")
+	}
 
 	return nips, err
 }
