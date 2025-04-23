@@ -59,7 +59,7 @@ func ToCurrentNipTags(nip string, lastUpdated time.Time, tags []string) (Current
 
 // Add the current nip tags to the database
 func AddCurrentNipTags(db *gorm.DB, nipTags CurrentNipTags) {
-	log.Info("creating nip tags for NIP-", nipTags.Nip)
+	log.Info("creating nip tags for new NIP-", nipTags.Nip)
 
 	res := db.Create(&nipTags)
 	if res.Error != nil {
