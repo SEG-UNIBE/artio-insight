@@ -42,7 +42,7 @@ services:
       - artio_insights_network
 
 networks:
-  app_network:
+  artio_insights_network:
     driver: bridge
 
 
