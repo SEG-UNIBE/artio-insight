@@ -16,13 +16,19 @@ import (
 func main() {
 	// Get Environment variables from .env file
 	err := godotenv.Load("../.env")
+	isDocker := false
 	if err != nil {
-		log.Error("could not load .env file")
-		return
+		err = godotenv.Load(".env")
+		// If env file has been copied to the module folder, that means it is running in a Docker container
+		isDocker = true
+		if err != nil {
+			log.Error("could not load .env file: ", err)
+			return
+		}
 	}
 
 	// Get the database connection
-	err = db.InitDB()
+	err = db.InitDB(isDocker)
 	if err != nil {
 		log.Error("could not initiate database connection: ", err)
 		return

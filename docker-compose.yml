@@ -2,6 +2,8 @@ services:
   grafana:
     image: grafana/grafana
     container_name: ${GF_CONTAINER_NAME}
+    depends_on:
+      - database
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_PASSWORD}
     ports:
@@ -20,10 +22,29 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT}:${DOCKER_DB_PORT}
     restart: always
     volumes:
       - artio_insight_db_data:/var/lib/postgresql/data
+    networks:
+      - artio_insights_network
+
+  niptags:
+    build:
+      context: ./
+      dockerfile: ./nostr-protocol-nips_nip-tags/Dockerfile
+    container_name: niptags
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+    networks:
+      - artio_insights_network
+
+networks:
+  app_network:
+    driver: bridge
+
 
 volumes:
   artio_insight_gf_data:

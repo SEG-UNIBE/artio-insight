@@ -1,11 +1,12 @@
 FROM golang:latest
 
 WORKDIR /app
-COPY . /app
+COPY ./nostr-protocol-nips_nip-tags /app
+COPY .env /app/.env
 
 RUN go mod tidy
 RUN go mod download
-RUN go build -o /app/bin/go-db-etl /app/cmd/main.go
+RUN go build -o /app/bin/main /app/cmd/main.go
 
 
-CMD ["/app/bin/go-db-etl"]
+CMD ["/app/bin/main"]
