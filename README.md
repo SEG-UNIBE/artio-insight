@@ -19,7 +19,7 @@ To add another Go module, the easiest way would be to copy the current module, r
 ### Prerequisites
 
 - Docker
-- Go 
+- Go (if running the module bare bones)
 
 ### Instructions
 
@@ -30,4 +30,14 @@ To add another Go module, the easiest way would be to copy the current module, r
 
 #### nostr-protocol-nips_tags
 
-- To run the app: `go run cmd/main.go`
+The database must be running for this module to work properly.
+
+##### Bare Bones
+
+1. Move to the corresponding folder: `cd nostr-protocol-nips_nip-tags`
+2. Download the packages: `go mod download`
+3. Run the app: `go run cmd/main.go`
+
+##### In Docker
+
+Use the `docker-compose.yml` file.
