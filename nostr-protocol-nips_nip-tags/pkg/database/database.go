@@ -15,7 +15,7 @@ const SQL_FILE_PATH = "init/init.sql"
 
 var DB *gorm.DB
 
-func InitDB() error {
+func InitDB(isDocker bool) error {
 	// Check if database already exists
 	if DB != nil {
 		return fmt.Errorf("database already initialized")
@@ -27,6 +27,10 @@ func InitDB() error {
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
 	dbHost := os.Getenv("DB_HOST")
+	if isDocker {
+		dbPort = os.Getenv("DOCKER_DB_PORT")
+		dbHost = os.Getenv("DOCKER_DB_HOST")
+	}
 	dbSslmode := os.Getenv("DB_SSLMODE")
 	dbTimezone := os.Getenv("DB_TIMEZONE")
 	if dbUser == "" || dbPassword == "" || dbName == "" || dbPort == "" || dbHost == "" || dbSslmode == "" || dbTimezone == "" {
