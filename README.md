@@ -5,7 +5,7 @@
 # Artio Insights
 
 Artio Insights is a aggregator of Nostr data pulling from external sources. It has a frontend component that illustrates the data from the external sources and the [Artio Relay](https://github.com/SEG-UNIBE/artio-relay) into graphs.
-
+Another component is the DV (Data Vault) that allows the aggregation of data from multiple sources into a single data model.
 ## Development 
 
 The project is organized into different modules. Each one of them is a folder with this nomenclature : `{data-source}_{data-type}`. For example, `nostr-protocol-nips_tags` pulls NIP *tags* data from the github repo [*nostr-protocol/nips*](https://github.com/nostr-protocol/nips).
