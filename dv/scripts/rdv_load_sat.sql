@@ -2,7 +2,7 @@
 =============================================
 Author:				Michael Kaiser
 Create date:		2025-08-20
-Description:		Script to generate and possibly execute the load for the rdv sat cur tables
+Description:		Script to generate and possibly execute the load for the rdv sat tables
 Modification:
 YYYY-MM-DD	mkaiser
 =============================================
@@ -36,13 +36,13 @@ $$
 
                 --SELECT INTO output CONCAT(output, E'BEGIN WORK;\n');
                 --SELECT INTO output CONCAT(output, FORMAT(E'LOCK TABLE rdv.%s_sat_cur IN EXCLUSIVE MODE;\n', tab_name));
-                SELECT INTO output CONCAT(output, FORMAT(E'TRUNCATE TABLE rdv.%s_sat_cur;\n', tab_name));
-                SELECT INTO output CONCAT(output,
-                                          FORMAT(E'INSERT INTO rdv.%s_sat_cur\n ' ||
-                                                 E'SELECT NOW(), NULL, decode(md5(CAST(t.* AS text)), ''hex''), ' ||
-                                                 E' t.* ' ||
-                                                 E'FROM inb.%s t;\n',
-                                                 tab_name, tab_name));
+                SELECT INTO output CONCAT(output, FORMAT(E'UPDATE rdv.%s_sat ' ||
+                                                         E'SET delete_dts = NOW() ' ||
+                                                         E'WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat_cur) ' ||
+                                                         E'AND delete_dts IS NOT NULL;\n', tab_name, tab_name));
+                SELECT INTO output CONCAT(output, FORMAT(E'INSERT INTO rdv.%s_sat ' ||
+                                                         E'SELECT * FROM rdv.%s_sat_cur ' ||
+                                                         E'WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat);\n \n', tab_name, tab_name, tab_name));
                 --SELECT INTO output CONCAT(output, E'COMMIT WORK;\n \n');
 
             END LOOP;
