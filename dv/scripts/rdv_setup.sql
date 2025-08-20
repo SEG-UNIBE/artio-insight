@@ -50,11 +50,14 @@ $$
                 SELECT INTO output CONCAT(output, FORMAT(
                         E'CREATE TABLE rdv.%s_sat AS (SELECT CAST(NULL AS timestamp with time zone) AS load_dts, CAST(NULL AS timestamp with time zone) AS delete_dts, CAST(NULL AS bytea) AS frh, * FROM inb.%s WHERE 1=2);\n',
                         tab_name, tab_name));
+                SELECT INTO output CONCAT(output, FORMAT(E'CREATE INDEX idx_frh_%s_sat ON rdv.%s_sat (frh);\n \n', tab_name, tab_name));
 
                 SELECT INTO output CONCAT(output, FORMAT(E'DROP TABLE IF EXISTS rdv.%s_sat_cur;\n', tab_name));
                 SELECT INTO output CONCAT(output, FORMAT(
-                        E'CREATE TABLE rdv.%s_sat_cur AS (SELECT CAST(NULL AS timestamp with time zone) AS load_dts, CAST(NULL AS timestamp with time zone) AS delete_dts, CAST(NULL AS bytea) AS frh, * FROM inb.%s WHERE 1=2);\n \n',
+                        E'CREATE TABLE rdv.%s_sat_cur AS (SELECT CAST(NULL AS timestamp with time zone) AS load_dts, CAST(NULL AS timestamp with time zone) AS delete_dts, CAST(NULL AS bytea) AS frh, * FROM inb.%s WHERE 1=2);\n',
                         tab_name, tab_name));
+                SELECT INTO output CONCAT(output, FORMAT(E'CREATE INDEX idx_frh_%s_sat_cur ON rdv.%s_sat_cur (frh);\n \n', tab_name, tab_name));
+
 
             END LOOP;
             CLOSE curs;
