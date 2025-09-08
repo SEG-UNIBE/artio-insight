@@ -17,3 +17,5 @@ CREATE SCHEMA cfg;
 CREATE SCHEMA inb;
 CREATE SCHEMA rdv;
 CREATE SCHEMA udm;
+
+ALTER DATABASE insight SET search_path TO inb;
