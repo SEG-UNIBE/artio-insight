@@ -39,7 +39,7 @@ $$
                 SELECT INTO output CONCAT(output, FORMAT(E'UPDATE rdv.%s_sat ' ||
                                                          E'SET delete_dts = NOW() ' ||
                                                          E'WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat_cur) ' ||
-                                                         E'AND delete_dts IS NOT NULL;\n', tab_name, tab_name));
+                                                         E'AND delete_dts IS NULL;\n', tab_name, tab_name));
                 SELECT INTO output CONCAT(output, FORMAT(E'INSERT INTO rdv.%s_sat ' ||
                                                          E'SELECT * FROM rdv.%s_sat_cur ' ||
                                                          E'WHERE frh NOT IN (SELECT frh FROM rdv.%s_sat);\n \n', tab_name, tab_name, tab_name));
