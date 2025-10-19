@@ -14,9 +14,9 @@ SELECT record_src,
        pubkey,
        MIN(created_at) AS first_seen,
        MAX(updated_at) AS last_seen,
-       count(pubkey)   as seen_count,
-       COUNT(id)       AS event_count
+       COUNT(pubkey)   AS seen_count,
+       COUNT(event_id) AS event_count
 
-from udm.events_aggregation
-group by pubkey, record_src
+FROM udm.events_aggregation
+GROUP BY pubkey, record_src
     );
