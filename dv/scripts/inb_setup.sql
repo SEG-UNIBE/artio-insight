@@ -5,6 +5,7 @@ Create date:		2025-08-20
 Description:		Script to setup the tables in the inb layer
 Modification:
 2025-09-22	mkaiser     Adding tables for artioinf
+2025-10-19  mkaiser     Adding SET UNLOGGED statements for inb tables
 =============================================
 */
 
@@ -26,6 +27,8 @@ CREATE TABLE IF NOT EXISTS inb.events_artiostr
     CONSTRAINT events_artiostr_pkey PRIMARY KEY (id)
 );
 
+ALTER TABLE inb.events_artiostr SET UNLOGGED;
+
 -- Table: public.logs
 DROP TABLE IF EXISTS inb.logs_artiostr;
 
@@ -40,6 +43,8 @@ CREATE TABLE IF NOT EXISTS inb.logs_artiostr
     content    text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT logs_artiostr_pkey PRIMARY KEY (id)
 );
+
+ALTER TABLE inb.logs_artiostr SET UNLOGGED;
 
 DROP TABLE IF EXISTS inb.events_artioinf;
 
@@ -59,6 +64,8 @@ CREATE TABLE IF NOT EXISTS inb.events_artioinf
     CONSTRAINT events_artioinf_pkey PRIMARY KEY (id)
 );
 
+ALTER TABLE inb.events_artioinf SET UNLOGGED;
+
 -- Table: public.logs
 DROP TABLE IF EXISTS inb.logs_artioinf;
 
@@ -73,3 +80,5 @@ CREATE TABLE IF NOT EXISTS inb.logs_artioinf
     content    text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT logs_artioinf_pkey PRIMARY KEY (id)
 );
+
+ALTER TABLE inb.logs_artioinf SET UNLOGGED;
