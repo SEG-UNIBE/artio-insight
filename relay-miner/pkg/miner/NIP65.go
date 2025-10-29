@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"slices"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -53,7 +54,6 @@ func GetRelayList(address string) ([]*nostr.Event, error) {
 						log.Printf("error while unamrshalling event: %s\n", err)
 
 					}
-					fmt.Println(event)
 					eventList = append(eventList, &event)
 				} else {
 					log.Printf("recv: %s", message)
@@ -87,4 +87,28 @@ func GetRelayList(address string) ([]*nostr.Event, error) {
 			return eventList, nil
 		}
 	}
+}
+
+/*
+FindNeighbours parses a list of nostr.Event to find all relays that are used by another user.
+*/
+func FindNeighbours(eventList []*nostr.Event) []string {
+	wrongKind := 0
+	var foundRelays []string
+	// all the events must be of kind 10002
+	for _, event := range eventList {
+		if event.Kind != 10002 {
+			wrongKind++
+			continue
+		}
+
+		for _, tag := range event.Tags {
+			if tagType := tag[0]; tagType == "r" {
+				foundRelays = append(foundRelays, tag[1])
+			}
+		}
+	}
+
+	slices.Sort(foundRelays)
+	return slices.Compact(foundRelays)
 }

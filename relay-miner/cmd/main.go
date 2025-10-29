@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/miner"
 )
 
@@ -10,9 +8,14 @@ import (
 main example function for just fetching the data from the relays
 */
 func main() {
-	relay := "relay.artiostr.ch"
+	startingRelays := []string{"relay.artiostr.ch", "relay.artio.inf.unibe.ch"}
+	miners := make([]*miner.RelayMiner, 0)
+	for _, relay := range startingRelays {
+		miners = append(miners, miner.NewMiner(relay))
+	}
 
-	_, _ = miner.GetNip11(fmt.Sprintf("https://%v/", relay))
-	list, _ := miner.GetRelayList(fmt.Sprintf("wss://%v/", relay))
-
+	for _, relay := range miners {
+		relay.Load()
+		relay.Stats()
+	}
 }
