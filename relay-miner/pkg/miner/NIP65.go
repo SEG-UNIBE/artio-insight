@@ -112,3 +112,16 @@ func FindNeighbours(eventList []*nostr.Event) []string {
 	slices.Sort(foundRelays)
 	return slices.Compact(foundRelays)
 }
+
+/*
+FindRelayForUser parses a list of nostr.Event to find all relays that are used by another user.
+*/
+func FindRelayForUser(event *nostr.Event) (string, []string) {
+	var relays []string
+	for _, tag := range event.Tags {
+		if tagType := tag[0]; tagType == "r" {
+			relays = append(relays, tag[1])
+		}
+	}
+	return event.PubKey, relays
+}

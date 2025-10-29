@@ -17,7 +17,7 @@ type RelayMiner struct {
 	EventList       []*nostr.Event
 	nip11Result     []byte // store both the raw result and the parsed to keep information that might not be compliant with NIP-11
 	Nip11Document   *nip11.RelayInformationDocument
-	neighbourRelays []string
+	NeighbourRelays []string
 	loaded          bool
 }
 
@@ -70,7 +70,7 @@ func (rm *RelayMiner) LoadRelayLists() {
 
 func (rm *RelayMiner) LoadNeighbouringRelays() {
 	neighbours := FindNeighbours(rm.EventList)
-	rm.neighbourRelays = neighbours
+	rm.NeighbourRelays = neighbours
 }
 
 /*
@@ -84,8 +84,8 @@ func (rm *RelayMiner) Stats() {
 	fmt.Printf("\tEvents: %v\n", len(rm.EventList))
 	fmt.Printf("\tSoftare: %v\n", rm.Nip11Document.Software)
 	fmt.Printf("\tNIPs: %v\n", rm.Nip11Document.SupportedNIPs)
-	fmt.Printf("\tNeighbouring Relays: %v\n", len(rm.neighbourRelays))
-	//fmt.Printf("\tNeighbouring Relys: %v\n", rm.neighbourRelays)
+	fmt.Printf("\tNeighbouring Relays: %v\n", len(rm.NeighbourRelays))
+	//fmt.Printf("\tNeighbouring Relys: %v\n", rm.NeighbourRelays)
 
 }
 
