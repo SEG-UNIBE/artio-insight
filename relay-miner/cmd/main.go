@@ -12,7 +12,7 @@ main example function for just fetching the data from the relays
 func main() {
 	relay := "relay.artiostr.ch"
 
-	miner.GetNip11(fmt.Sprintf("https://%v/", relay))
-	miner.GetRelayList(fmt.Sprintf("wss://%v/", relay))
+	_, _ = miner.GetNip11(fmt.Sprintf("https://%v/", relay))
+	list, _ := miner.GetRelayList(fmt.Sprintf("wss://%v/", relay))
 
 }

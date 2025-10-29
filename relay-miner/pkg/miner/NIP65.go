@@ -1,6 +1,7 @@
 package miner
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -8,18 +9,20 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/nbd-wtf/go-nostr"
 )
 
 /*
 GetRelayList fetches all the Events of Type 10002 from the relay
 */
-func GetRelayList(address string) {
+func GetRelayList(address string) ([]*nostr.Event, error) {
 	interrupt := make(chan os.Signal, 1)
+	eventList := make([]*nostr.Event, 0)
 	signal.Notify(interrupt, os.Interrupt)
 	c, _, err := websocket.DefaultDialer.Dial(address, nil)
 	if err != nil {
 		fmt.Println("dial:", err)
-		return
+		return eventList, err
 	}
 	defer c.Close()
 
@@ -28,27 +31,46 @@ func GetRelayList(address string) {
 	go func() {
 		defer close(done)
 		for {
+			var response []json.RawMessage
+			var messageType string
 			_, message, err := c.ReadMessage()
 			if err != nil {
 				log.Println("read error:", err)
 				return
 			}
-			log.Printf("recv: %s", message)
+			_ = json.Unmarshal(message, &response)
+			if len(response) > 0 {
+				_ = json.Unmarshal(response[0], &messageType)
+				if messageType == "EOSE" {
+					// relay signaled EOSe
+					// no more messages are coming -> closing session
+					done <- struct{}{}
+					return
+				} else if messageType == "EVENT" {
+					// unmarshall the event
+					var event nostr.Event
+					if err := json.Unmarshal(response[2], &event); err != nil {
+						log.Printf("error while unamrshalling event: %s\n", err)
+
+					}
+					fmt.Println(event)
+					eventList = append(eventList, &event)
+				} else {
+					log.Printf("recv: %s", message)
+				}
+			}
 		}
 	}()
 
-	err = c.WriteMessage(websocket.TextMessage, []byte("[\"COUNT\", \"1\", {}]"))
+	err = c.WriteMessage(websocket.TextMessage, []byte("[\"REQ\", \"1\", {\"kinds\": [10002]}]"))
 	if err != nil {
 		log.Println("write:", err)
 	}
 
-	time.Sleep(5 * time.Second)
-	interrupt <- os.Interrupt
-
 	for {
 		select {
 		case <-done:
-			return
+			return eventList, nil
 		case <-interrupt:
 			log.Println("interrupt")
 
@@ -56,13 +78,13 @@ func GetRelayList(address string) {
 			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			if err != nil {
 				log.Println("write close error:", err)
-				return
+				return eventList, err
 			}
 			select {
 			case <-done:
 			case <-time.After(time.Second):
 			}
-			return
+			return eventList, nil
 		}
 	}
 }
