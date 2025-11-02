@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
+	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/helper"
 	"github.com/nbd-wtf/go-nostr"
 	"github.com/nbd-wtf/go-nostr/nip11"
 )
@@ -32,7 +34,12 @@ func (rm *RelayMiner) Load() {
 LoadNIP11 Load the NIP-11 Result into the object
 */
 func (rm *RelayMiner) LoadNIP11() {
-	address := fmt.Sprintf("https://%v/", rm.Relay)
+	var address string
+	if strings.HasPrefix(rm.Relay, "ws://") {
+		address = fmt.Sprintf("http://%v/", rm.CleanName())
+	} else {
+		address = fmt.Sprintf("https://%v/", rm.CleanName())
+	}
 	result, err := GetNip11(address)
 	if err != nil {
 		log.Printf("error occured: %s/n", err)
@@ -58,7 +65,7 @@ func (rm *RelayMiner) parseNip11() {
 LoadRelayLists Load the NIP-11 Result into the object
 */
 func (rm *RelayMiner) LoadRelayLists() {
-	address := fmt.Sprintf("wss://%v/", rm.Relay)
+	address := fmt.Sprintf("%v", rm.Relay)
 	result, err := GetRelayList(address)
 	if err != nil {
 		log.Printf("error occured: %s/n", err)
@@ -66,6 +73,45 @@ func (rm *RelayMiner) LoadRelayLists() {
 	}
 	rm.EventList = result
 	return
+}
+
+/*
+GetCleanRelayList Get cleaned up list of relays to load the NIP-11 from.
+*/
+func (rm *RelayMiner) GetCleanRelayList() []string {
+	outputList := make([]string, 0)
+	for _, relay := range rm.NeighbourRelays {
+		relay = helper.CleanRelayName(relay)
+		outputList = append(outputList, relay)
+	}
+	return outputList
+}
+
+/*
+Software gets the software stack from the NIP 11 document
+*/
+func (rm *RelayMiner) Software() string {
+	if rm.Nip11Document == nil {
+		return "N/A"
+	}
+	return rm.Nip11Document.Software
+}
+
+/*
+CleanName returns the cleaned name of the relay
+*/
+func (rm *RelayMiner) CleanName() string {
+	return helper.CleanRelayName(rm.Relay)
+}
+
+/*
+PublicKey returns the public key of the relay if available
+*/
+func (rm *RelayMiner) PublicKey() string {
+	if rm.Nip11Document == nil {
+		return "N/A"
+	}
+	return rm.Nip11Document.PubKey
 }
 
 func (rm *RelayMiner) LoadNeighbouringRelays() {
@@ -82,8 +128,13 @@ func (rm *RelayMiner) Stats() {
 	}
 	fmt.Printf("Relay: %v\n", rm.Relay)
 	fmt.Printf("\tEvents: %v\n", len(rm.EventList))
-	fmt.Printf("\tSoftare: %v\n", rm.Nip11Document.Software)
-	fmt.Printf("\tNIPs: %v\n", rm.Nip11Document.SupportedNIPs)
+	if rm.Nip11Document != nil {
+		fmt.Printf("\tSoftare: %v\n", rm.Nip11Document.Software)
+		fmt.Printf("\tNIPs: %v\n", rm.Nip11Document.SupportedNIPs)
+	} else {
+		fmt.Printf("\tSoftare: %v\n", "N/A")
+		fmt.Printf("\tNIPs: %v\n", "N/A")
+	}
 	fmt.Printf("\tNeighbouring Relays: %v\n", len(rm.NeighbourRelays))
 	//fmt.Printf("\tNeighbouring Relys: %v\n", rm.NeighbourRelays)
 

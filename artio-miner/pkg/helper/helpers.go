@@ -1,0 +1,54 @@
+package helper
+
+import (
+	"net"
+	"net/url"
+	"strings"
+
+	"github.com/nbd-wtf/go-nostr"
+)
+
+/*
+CleanRelayName cleans a relay name by removing any ws://, wss:// and more
+*/
+func CleanRelayName(name string) string {
+	name = strings.ReplaceAll(name, "ws://", "")
+	name = strings.ReplaceAll(name, "wss://", "")
+	name = strings.ReplaceAll(name, "/", "")
+	return name
+}
+
+/*
+FindRelayForUser parses a list of nostr.Event to find all relays that are used by another user.
+*/
+func FindRelayForUser(event *nostr.Event) (string, []string) {
+	var relays []string
+	for _, tag := range event.Tags {
+		if tagType := tag[0]; tagType == "r" {
+			relays = append(relays, tag[1])
+		}
+	}
+	return event.PubKey, relays
+}
+
+/*
+ValidateURL validates if an url is valid and not only a localnetwork hostname
+*/
+func ValidateURL(uri string) bool {
+	sharedIPNet := net.IPNet{
+		IP:   net.IPv4(100, 64, 0, 0),
+		Mask: net.CIDRMask(10, 32),
+	}
+	c, err := url.ParseRequestURI(uri)
+	if err != nil {
+		return false
+	}
+	ipAddr := net.ParseIP(c.Hostname())
+	if ipAddr.IsPrivate() || ipAddr.IsLoopback() {
+		return false
+	}
+	if sharedIPNet.Contains(ipAddr) {
+		return false
+	}
+	return true
+}
