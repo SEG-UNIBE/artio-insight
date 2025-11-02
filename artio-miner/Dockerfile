@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Copy binary from builder
 COPY --from=builder /app/bin/relay-miner /app/bin/relay-miner
-COPY .env .env
+# COPY .env .env
 
 # Optionally, copy static files if needed
 # COPY --from=builder /app/static ./static
