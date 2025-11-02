@@ -1,0 +1,15 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "**" ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build the Docker image
+        run: |
+          cd artio-minor
+          docker build . --file ./Dockerfile --tag $(date +%s)
