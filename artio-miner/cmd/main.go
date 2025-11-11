@@ -26,7 +26,7 @@ func main() {
 	username := os.Getenv("NEO4J_USERNAME")
 
 	neo := storage.Neo4jInstance{Username: username, Password: password, URI: uri, DBName: db}
-	err := neo.Init()
+	err = neo.Init()
 	if err != nil {
 		log.Fatalf("Error on neo4j init: %v", err)
 		return
