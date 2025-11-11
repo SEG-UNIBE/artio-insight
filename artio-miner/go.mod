@@ -4,6 +4,7 @@ go 1.24.1
 
 require (
 	github.com/gorilla/websocket v1.5.3
+	github.com/joho/godotenv v1.5.1
 	github.com/nbd-wtf/go-nostr v0.52.1
 	github.com/neo4j/neo4j-go-driver/v5 v5.28.4
 )

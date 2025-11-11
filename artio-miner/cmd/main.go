@@ -2,9 +2,11 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/miner"
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/storage"
+	"github.com/joho/godotenv"
 )
 
 /*
@@ -16,8 +18,14 @@ func main() {
 	for _, relay := range startingRelays {
 		miners = append(miners, miner.NewMiner(relay))
 	}
+	err := godotenv.Load(".env")
 
-	neo := storage.Neo4jInstance{Username: "neo4j", Password: "fancyPassword", URI: "neo4j://localhost:7687", DBName: "neo4j"}
+	uri := os.Getenv("NEO4J_URI")
+	password := os.Getenv("NEO4J_PASSWORD")
+	db := os.Getenv("NEO4J_DB")
+	username := os.Getenv("NEO4J_USERNAME")
+
+	neo := storage.Neo4jInstance{Username: username, Password: password, URI: uri, DBName: db}
 	err := neo.Init()
 	if err != nil {
 		log.Fatalf("Error on neo4j init: %v", err)
@@ -26,7 +34,7 @@ func main() {
 	_ = neo.Clean()
 
 	defer neo.Close()
-	manager := miner.Manager{Neo: &neo, MaxRecursion: 3, MaxRunners: 6, PushUsers: false}
+	manager := miner.Manager{Neo: &neo, MaxRecursion: 2, MaxRunners: 2, PushUsers: false}
 
 	manager.Run(startingRelays)
 

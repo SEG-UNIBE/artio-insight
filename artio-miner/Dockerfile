@@ -19,7 +19,7 @@ RUN go build -o /app/bin/relay-miner /app/cmd/main.go
 FROM alpine:latest
 
 WORKDIR /app
-
+COPY .env .env
 # Copy binary from builder
 COPY --from=builder /app/bin/relay-miner /app/bin/relay-miner
 # COPY .env .env
