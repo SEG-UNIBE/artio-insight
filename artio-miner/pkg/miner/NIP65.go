@@ -2,7 +2,6 @@ package miner
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -22,7 +21,7 @@ func GetRelayList(address string) ([]*nostr.Event, error) {
 	signal.Notify(interrupt, os.Interrupt)
 	c, _, err := websocket.DefaultDialer.Dial(address, nil)
 	if err != nil {
-		fmt.Println("dial:", err)
+		log.Println("dial:", err)
 		return eventList, err
 	}
 	defer c.Close()

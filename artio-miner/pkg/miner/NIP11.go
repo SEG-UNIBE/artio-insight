@@ -2,8 +2,8 @@ package miner
 
 import (
 	"context"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 )
@@ -19,21 +19,21 @@ func GetNip11(relay string) ([]byte, error) {
 
 	req, err := http.NewRequestWithContext(ctx, method, relay, nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("Relay %s returned error: %s", relay, err)
 		return nil, err
 	}
 	req.Header.Add("Accept", "application/nostr+json")
 	// req.Header.Add("User-Agent", "relay-miner")
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("Relay %s returned error: %s", relay, err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("Relay %s returned error: %s", relay, err)
 		return nil, err
 	}
 	return body, nil

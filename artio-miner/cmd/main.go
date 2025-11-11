@@ -26,7 +26,7 @@ func main() {
 	_ = neo.Clean()
 
 	defer neo.Close()
-	manager := miner.Manager{Neo: &neo, MaxRecursion: 1}
+	manager := miner.Manager{Neo: &neo, MaxRecursion: 1, MaxRunners: 8, PushUsers: false}
 
 	manager.Run(startingRelays)
 

@@ -23,6 +23,8 @@ type RelayMiner struct {
 	loaded          bool
 	IsValid         bool
 	InvalidReason   string
+	DetectedBy      *RelayMiner
+	RecursionLevel  int
 }
 
 func (rm *RelayMiner) Load() {
@@ -149,5 +151,5 @@ func (rm *RelayMiner) Stats() {
 }
 
 func NewMiner(relayUrl string) *RelayMiner {
-	return &RelayMiner{Relay: relayUrl, EventList: make([]*nostr.Event, 0), loaded: false}
+	return &RelayMiner{Relay: relayUrl, EventList: make([]*nostr.Event, 0), loaded: false, DetectedBy: nil}
 }
