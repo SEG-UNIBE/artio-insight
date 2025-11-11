@@ -34,21 +34,24 @@ func FindRelayForUser(event *nostr.Event) (string, []string) {
 /*
 ValidateURL validates if an url is valid and not only a localnetwork hostname
 */
-func ValidateURL(uri string) bool {
+func ValidateURL(uri string) (bool, string) {
 	sharedIPNet := net.IPNet{
 		IP:   net.IPv4(100, 64, 0, 0),
 		Mask: net.CIDRMask(10, 32),
 	}
 	c, err := url.ParseRequestURI(uri)
 	if err != nil {
-		return false
+		return false, "Invalid URL"
 	}
 	ipAddr := net.ParseIP(c.Hostname())
-	if ipAddr.IsPrivate() || ipAddr.IsLoopback() {
-		return false
+	if ipAddr.IsPrivate() {
+		return false, "Private IP address"
+	}
+	if ipAddr.IsLoopback() {
+		return false, "Loopback IP address"
 	}
 	if sharedIPNet.Contains(ipAddr) {
-		return false
+		return false, "Carrier-Grade NAT IP address"
 	}
-	return true
+	return true, ""
 }

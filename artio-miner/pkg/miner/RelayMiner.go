@@ -21,10 +21,18 @@ type RelayMiner struct {
 	Nip11Document   *nip11.RelayInformationDocument
 	NeighbourRelays []string
 	loaded          bool
+	IsValid         bool
+	InvalidReason   string
 }
 
 func (rm *RelayMiner) Load() {
 	defer func() { rm.loaded = true }()
+	rm.IsValid, rm.InvalidReason = helper.ValidateURL(rm.Relay)
+	if !rm.IsValid {
+		fmt.Println(rm.InvalidReason, ": ", rm.Relay)
+		return
+	}
+
 	rm.LoadNIP11()
 	rm.LoadRelayLists()
 	rm.LoadNeighbouringRelays()

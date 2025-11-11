@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/helper"
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/miner"
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/storage"
 )
@@ -28,51 +26,8 @@ func main() {
 	_ = neo.Clean()
 
 	defer neo.Close()
+	manager := miner.Manager{Neo: &neo, MaxRecursion: 1}
 
-	for _, relay := range miners {
-		handleRelay(relay, neo, true)
-	}
-}
+	manager.Run(startingRelays)
 
-func handleRelay(relay *miner.RelayMiner, neo storage.Neo4jInstance, recursive bool) {
-	if !helper.ValidateURL(relay.Relay) {
-		fmt.Println("invalid relay url:", relay.Relay)
-		return
-	}
-	relay.Load()
-	relay.Stats()
-
-	// merge the relay
-	neo.Execute(`MERGE(r:Relay {name: $name})`, map[string]any{"name": relay.CleanName()})
-	neo.Execute(`MERGE(r:RelayAlternativeName {name: $name})`, map[string]any{"name": relay.Relay})
-	neo.Execute(`MATCH(r:Relay), (ra:RelayAlternativeName) WHERE r.name=$name and ra.name=$alternativeName MERGE (r)-[:ALT_NAME]->(ra);`, map[string]any{"alternativeName": relay.Relay, "name": relay.CleanName()})
-
-	// do the version
-	neo.Execute(`MERGE(s:Software {software: $software})`, map[string]any{"software": relay.Software()})
-
-	// merge relation between relay and version
-	neo.Execute(`MATCH(r:Relay), (s:Software) WHERE r.name=$name and s.software=$version MERGE (r)-[:USES_SOFTWARE]->(s);`, map[string]any{"version": relay.Software(), "name": relay.CleanName()})
-
-	// merge the public key of the owner
-	neo.Execute(`MERGE(u:User {pubkey: $pubkey})`, map[string]any{"pubkey": relay.PublicKey()})
-
-	// merge relation between relay and owner
-	neo.Execute(`MATCH(r:Relay), (u:User) WHERE r.name=$name and u.pubkey=$pubkey MERGE (u)-[:OWNS]->(r);`, map[string]any{"pubkey": relay.PublicKey(), "name": relay.CleanName()})
-
-	if recursive {
-		for _, rel := range relay.NeighbourRelays {
-			neo.Execute(`MERGE(r:Relay {name: $name})`, map[string]any{"name": rel})
-			relayMiner := miner.NewMiner(rel)
-			go handleRelay(relayMiner, neo, false)
-		}
-
-		for _, evt := range relay.EventList {
-			neo.Execute(`MERGE(u:User {pubkey: $pubkey})`, map[string]any{"pubkey": evt.PubKey})
-
-			pubkey, relays := helper.FindRelayForUser(evt)
-			for _, rel := range relays {
-				neo.Execute(`MATCH(r:Relay), (u:User) WHERE r.name=$name and u.pubkey=$pubkey MERGE (u)-[:USES]->(r);`, map[string]any{"pubkey": pubkey, "name": rel})
-			}
-		}
-	}
 }

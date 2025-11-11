@@ -76,25 +76,26 @@ func TestValidateURL(t *testing.T) {
 		uri string
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name       string
+		args       args
+		wantBool   bool
+		wantString string
 	}{
-		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, want: true},
-		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, want: true},
-		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, want: true},
-		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, want: true},
-		{name: "ValidateURL1", args: args{uri: "192.168.10.10"}, want: false},
-		{name: "ValidateURL1", args: args{uri: "10.10.10.10"}, want: false},
-		{name: "ValidateURL1", args: args{uri: "100.64.224.5"}, want: false},
-		{name: "ValidateURL1", args: args{uri: "127.0.0.1"}, want: false},
+		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, wantBool: true, wantString: ""},
+		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, wantBool: true, wantString: ""},
+		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, wantBool: true, wantString: ""},
+		{name: "ValidateURL1", args: args{uri: "relay.relay.com"}, wantBool: true, wantString: ""},
+		{name: "ValidateURL1", args: args{uri: "192.168.10.10"}, wantBool: false, wantString: "Private IP address"},
+		{name: "ValidateURL1", args: args{uri: "10.10.10.10"}, wantBool: false, wantString: "Private IP address"},
+		{name: "ValidateURL1", args: args{uri: "100.64.224.5"}, wantBool: false, wantString: "Carrier-Grade NAT IP address"},
+		{name: "ValidateURL1", args: args{uri: "127.0.0.1"}, wantBool: false, wantString: "Loopback IP address"},
 	}
 	for _, tt := range tests {
 		for _, prefix := range []string{"ws://", "wss://", "http://", "https://"} {
 			t.Run(tt.name, func(t *testing.T) {
 				value := fmt.Sprintf("%s%s/", prefix, tt.args.uri)
-				if got := ValidateURL(value); got != tt.want {
-					t.Errorf("ValidateURL(%v) = %v, want %v", value, got, tt.want)
+				if gotBool, gotString := ValidateURL(value); gotBool != tt.wantBool || (gotString != tt.wantString) {
+					t.Errorf("ValidateURL(%v) = %v with %v, want %v with %v", value, gotBool, gotString, tt.wantBool, tt.wantString)
 				}
 			})
 		}
