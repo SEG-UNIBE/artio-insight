@@ -53,5 +53,8 @@ func ValidateURL(uri string) (bool, string) {
 	if sharedIPNet.Contains(ipAddr) {
 		return false, "Carrier-Grade NAT IP address"
 	}
+	if strings.HasSuffix(uri, ".onion") || strings.HasSuffix(uri, ".onion/") {
+		return false, "TOR network address"
+	}
 	return true, ""
 }

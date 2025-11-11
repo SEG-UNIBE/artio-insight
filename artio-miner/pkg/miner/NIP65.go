@@ -46,6 +46,10 @@ func GetRelayList(address string) ([]*nostr.Event, error) {
 					// no more messages are coming -> closing session
 					done <- struct{}{}
 					return
+				} else if messageType == "CLOSE" || messageType == "CLOSED" {
+					// relay is closing the connection
+					done <- struct{}{}
+					return
 				} else if messageType == "EVENT" {
 					// unmarshall the event
 					var event nostr.Event
@@ -54,6 +58,12 @@ func GetRelayList(address string) ([]*nostr.Event, error) {
 
 					}
 					eventList = append(eventList, &event)
+				} else if messageType == "NOTICE" {
+					// relay sent a notice
+					done <- struct{}{}
+				} else if messageType == "AUTH" {
+					// relay sent an auth message
+					// we will ignore it for now
 				} else {
 					// we received a message that is not EOSE or EVENT, e.g. AUTH
 					log.Printf("recv: %s", message)
@@ -62,7 +72,7 @@ func GetRelayList(address string) ([]*nostr.Event, error) {
 		}
 	}()
 
-	err = c.WriteMessage(websocket.TextMessage, []byte("[\"REQ\", \"1\", {\"kinds\": [10002]}]"))
+	err = c.WriteMessage(websocket.TextMessage, []byte("[\"REQ\", \"1\", {\"kinds\": [10002], \"limit\": 10000}]"))
 	if err != nil {
 		log.Println("write:", err)
 	}

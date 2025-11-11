@@ -21,7 +21,7 @@ type Runner struct {
 handleRelay process a single relay and store its information in the database
 */
 func (rnr *Runner) handleRelay(relay *RelayMiner) {
-	
+
 	rnr.loadMap[relay.CleanName()] = true
 
 	// load the relay information
@@ -32,6 +32,9 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 	rnr.Neo.Execute(`MERGE(r:Relay {name: $name, isValid: $isValid, validReason: $validReason})`, map[string]any{"name": relay.CleanName(), "validReason": relay.InvalidReason, "isValid": relay.IsValid})
 	rnr.Neo.Execute(`MERGE(r:RelayAlternativeName {name: $name})`, map[string]any{"name": relay.Relay})
 	rnr.Neo.Execute(`MATCH(r:Relay), (ra:RelayAlternativeName) WHERE r.name=$name and ra.name=$alternativeName MERGE (r)-[:ALT_NAME]->(ra);`, map[string]any{"alternativeName": relay.Relay, "name": relay.CleanName()})
+	if relay.DetectedBy != nil {
+		rnr.Neo.Execute(`MATCH(r1:Relay), (r2:Relay) WHERE r1.name=$name1 and r2.name=$name2 MERGE (r1)-[:DETECTED]->(r2);`, map[string]any{"name1": relay.DetectedBy.CleanName(), "name2": relay.CleanName()})
+	}
 	if !relay.IsValid {
 		return
 	}
@@ -48,11 +51,6 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 	// merge relation between relay and owner
 	rnr.Neo.Execute(`MATCH(r:Relay), (u:User) WHERE r.name=$name and u.pubkey=$pubkey MERGE (u)-[:OWNS]->(r);`, map[string]any{"pubkey": relay.PublicKey(), "name": relay.CleanName()})
 
-	// if we have a detectedBy, create the relationship
-	if relay.DetectedBy != nil {
-		rnr.Neo.Execute(`MATCH(r1:Relay), (r2:Relay) WHERE r1.name=$name1 and r2.name=$name2 MERGE (r1)-[:DETECTED]->(r2);`, map[string]any{"name1": relay.DetectedBy.CleanName(), "name2": relay.CleanName()})
-	}
-
 	if relay.RecursionLevel > 0 {
 		log.Printf("Runner %d: Found %d new Relays for possible mining\n", rnr.Id, len(relay.NeighbourRelays))
 		for _, rel := range relay.NeighbourRelays {
@@ -61,6 +59,10 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 			newRelay := NewMiner(rel)
 			newRelay.DetectedBy = relay
 			newRelay.RecursionLevel = relay.RecursionLevel - 1
+
+			if rnr.loadMap[newRelay.CleanName()] {
+				rnr.Neo.Execute(`MATCH(r1:Relay), (r2:Relay) WHERE r1.name=$name1 and r2.name=$name2 MERGE (r1)-[:DETECTED]->(r2);`, map[string]any{"name1": relay.CleanName(), "name2": newRelay.CleanName()})
+			}
 
 			rnr.Enqueue(newRelay)
 		}

@@ -31,7 +31,7 @@ func (rm *RelayMiner) Load() {
 	defer func() { rm.loaded = true }()
 	rm.IsValid, rm.InvalidReason = helper.ValidateURL(rm.Relay)
 	if !rm.IsValid {
-		fmt.Println(rm.InvalidReason, ": ", rm.Relay)
+		log.Println(rm.InvalidReason, ": ", rm.Relay)
 		return
 	}
 
@@ -52,7 +52,7 @@ func (rm *RelayMiner) LoadNIP11() {
 	}
 	result, err := GetNip11(address)
 	if err != nil {
-		log.Printf("error occured: %s/n", err)
+		log.Printf("error occured: %s\n", err)
 		return
 	}
 	rm.nip11Result = result
@@ -78,7 +78,7 @@ func (rm *RelayMiner) LoadRelayLists() {
 	address := fmt.Sprintf("%v", rm.Relay)
 	result, err := GetRelayList(address)
 	if err != nil {
-		log.Printf("error occured: %s/n", err)
+		log.Printf("error occured: %s\n", err)
 		return
 	}
 	rm.EventList = result
