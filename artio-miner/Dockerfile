@@ -27,4 +27,4 @@ COPY --from=builder /app/bin/relay-miner /app/bin/relay-miner
 # COPY --from=builder /app/static ./static
 
 # Run the application
-CMD ["/app/bin/relay"]
+CMD ["/app/bin/relay-miner"]
