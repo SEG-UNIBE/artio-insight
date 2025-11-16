@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/miner"
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/storage"
@@ -24,6 +25,8 @@ func main() {
 	password := os.Getenv("NEO4J_PASSWORD")
 	db := os.Getenv("NEO4J_DB")
 	username := os.Getenv("NEO4J_USERNAME")
+	maxRecursion, _ := strconv.ParseInt(os.Getenv("MAX_RECURSION"), 10, 64)
+	maxRunners, _ := strconv.ParseInt(os.Getenv("MAX_RUNNERS"), 10, 64)
 
 	neo := storage.Neo4jInstance{Username: username, Password: password, URI: uri, DBName: db}
 	err = neo.Init()
@@ -34,7 +37,7 @@ func main() {
 	_ = neo.Clean()
 
 	defer neo.Close()
-	manager := miner.Manager{Neo: &neo, MaxRecursion: 2, MaxRunners: 2, PushUsers: false}
+	manager := miner.Manager{Neo: &neo, MaxRecursion: int(maxRecursion), MaxRunners: int(maxRunners), PushUsers: false}
 
 	manager.Run(startingRelays)
 
