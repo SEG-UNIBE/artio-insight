@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"slices"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -76,6 +77,11 @@ func GetRelayList(address string) ([]*nostr.Event, error) {
 	if err != nil {
 		log.Println("write:", err)
 	}
+
+	go func() {
+		time.Sleep(30 * time.Second)
+		interrupt <- os.Signal(syscall.SIGINT)
+	}()
 
 	for {
 		select {

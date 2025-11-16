@@ -27,6 +27,7 @@ func main() {
 	username := os.Getenv("NEO4J_USERNAME")
 	maxRecursion, _ := strconv.ParseInt(os.Getenv("MAX_RECURSION"), 10, 64)
 	maxRunners, _ := strconv.ParseInt(os.Getenv("MAX_RUNNERS"), 10, 64)
+	pushUsers, _ := strconv.ParseBool(os.Getenv("PUSH_USERS"))
 
 	neo := storage.Neo4jInstance{Username: username, Password: password, URI: uri, DBName: db}
 	err = neo.Init()
@@ -37,7 +38,7 @@ func main() {
 	_ = neo.Clean()
 
 	defer neo.Close()
-	manager := miner.Manager{Neo: &neo, MaxRecursion: int(maxRecursion), MaxRunners: int(maxRunners), PushUsers: false}
+	manager := miner.Manager{Neo: &neo, MaxRecursion: int(maxRecursion), MaxRunners: int(maxRunners), PushUsers: pushUsers}
 
 	manager.Run(startingRelays)
 

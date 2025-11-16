@@ -52,7 +52,7 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 	rnr.Neo.Execute(`MATCH(r:Relay), (u:User) WHERE r.name=$name and u.pubkey=$pubkey MERGE (u)-[:OWNS]->(r);`, map[string]any{"pubkey": relay.PublicKey(), "name": relay.CleanName()})
 
 	if relay.RecursionLevel > 0 {
-		log.Printf("Runner %d: Found %d new Relays for possible mining\n", rnr.Id, len(relay.NeighbourRelays))
+		log.Printf("Runner %d: Found %d new Relays for possible mining on %s\n", rnr.Id, len(relay.NeighbourRelays), relay.Relay)
 		for _, rel := range relay.NeighbourRelays {
 			// create the new RelayMiner object and enqueue it for further processing
 			rnr.Neo.Execute(`MERGE(r:Relay {name: $name})`, map[string]any{"name": rel})
@@ -98,6 +98,7 @@ func (rnr *Runner) Run() {
 				log.Printf("Runner %d is running\n", rnr.Id)
 			}
 			rnr.idle = false
+			log.Printf("Runner %d is running with Relay %s\n", rnr.Id, nextMiner.Relay)
 			rnr.handleRelay(nextMiner)
 		}
 
