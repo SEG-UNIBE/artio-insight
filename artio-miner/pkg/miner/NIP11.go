@@ -14,7 +14,7 @@ GetNip11 fetches the NIP 11 Information for a specifc relay
 func GetNip11(relay string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	client := &http.Client{}
+	client := &http.Client{Timeout: 3 * time.Second}
 	method := "GET"
 
 	req, err := http.NewRequestWithContext(ctx, method, relay, nil)

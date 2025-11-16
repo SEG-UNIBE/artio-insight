@@ -36,8 +36,10 @@ func (rm *RelayMiner) Load() {
 	}
 
 	rm.LoadNIP11()
-	rm.LoadRelayLists()
-	rm.LoadNeighbouringRelays()
+	if rm.RecursionLevel > 0 {
+		rm.LoadRelayLists()
+		rm.LoadNeighbouringRelays()
+	}
 }
 
 /*
