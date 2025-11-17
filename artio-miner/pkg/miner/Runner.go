@@ -59,7 +59,9 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 			newRelay := NewMiner(rel)
 			newRelay.DetectedBy = relay
 			newRelay.RecursionLevel = relay.RecursionLevel - 1
-			rnr.Neo.Execute(`MERGE(r:Relay {name: $name})`, map[string]any{"name": newRelay.CleanName()})
+			newRelay.Validate()
+			rnr.Neo.Execute(`MERGE(r:Relay {name: $name, isValid: $isValid, validReason: $validReason})`, map[string]any{"name": newRelay.CleanName(), "validReason": newRelay.InvalidReason, "isValid": newRelay.IsValid})
+			// rnr.Neo.Execute(`MERGE(r:Relay {name: $name})`, map[string]any{"name": newRelay.CleanName()})
 
 			if rnr.loadMap[newRelay.CleanName()] {
 				rnr.Neo.Execute(`MATCH(r1:Relay), (r2:Relay) WHERE r1.name=$name1 and r2.name=$name2 MERGE (r1)-[:DETECTED]->(r2);`, map[string]any{"name1": relay.CleanName(), "name2": newRelay.CleanName()})

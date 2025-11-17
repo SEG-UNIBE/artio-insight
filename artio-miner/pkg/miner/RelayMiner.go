@@ -42,6 +42,11 @@ func (rm *RelayMiner) Load() {
 	}
 }
 
+func (rm *RelayMiner) Validate() {
+	rm.IsValid, rm.InvalidReason = helper.ValidateURL(rm.Relay)
+	return
+}
+
 /*
 LoadNIP11 Load the NIP-11 Result into the object
 */
