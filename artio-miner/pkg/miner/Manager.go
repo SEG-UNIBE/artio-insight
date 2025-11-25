@@ -1,6 +1,8 @@
 package miner
 
 import (
+	"sync"
+
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/storage"
 )
 
@@ -13,6 +15,7 @@ type Manager struct {
 	MaxRecursion int
 	miners       []*RelayMiner
 	loadMap      map[string]bool
+	mapMutex     sync.RWMutex
 	RelayQueue   *Queue
 	MaxRunners   int
 	runners      []*Runner
@@ -26,6 +29,7 @@ please pay attention to the recursion level to avoid overloading the database wi
 */
 func (mgmt *Manager) Run(relays []string) {
 	mgmt.loadMap = make(map[string]bool)
+	mgmt.mapMutex = sync.RWMutex{}
 	mgmt.RelayQueue = new(Queue)
 	for _, relay := range relays {
 		newMiner := NewMiner(relay)
@@ -67,11 +71,11 @@ func (mgmt *Manager) Dequeue() *RelayMiner {
 }
 
 func (mgmt *Manager) Enqueue(rm *RelayMiner) {
-	if mgmt.loadMap[rm.CleanName()] {
+	if mgmt.GetLoadMapEntry(rm.CleanName()) {
 		// means that we have already processed this relay
 		return
 	}
-	mgmt.loadMap[rm.CleanName()] = true
+	mgmt.SetLoadMapEntryTrue(rm.CleanName())
 	mgmt.RelayQueue.Enqueue(rm)
 }
 
@@ -97,4 +101,16 @@ func (mgmt *Manager) AnyNonIdleRunner() bool {
 		}
 	}
 	return false
+}
+
+func (mgmt *Manager) GetLoadMapEntry(relayName string) bool {
+	mgmt.mapMutex.RLock()
+	defer mgmt.mapMutex.RUnlock()
+	return mgmt.loadMap[relayName]
+}
+
+func (mgmt *Manager) SetLoadMapEntryTrue(relayName string) {
+	mgmt.mapMutex.Lock()
+	defer mgmt.mapMutex.Unlock()
+	mgmt.loadMap[relayName] = true
 }

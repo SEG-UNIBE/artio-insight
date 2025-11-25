@@ -82,3 +82,19 @@ CREATE TABLE IF NOT EXISTS inb.logs_artioinf
 );
 
 ALTER TABLE inb.logs_artioinf SET UNLOGGED;
+
+DROP TABLE IF EXISTS inb.dump_neo4j;
+CREATE TABLE inb.dump_neo4j
+(
+    _id         text,
+    _labels     text,
+    isValid text,
+    name       text,
+    pubkey text,
+    software text,
+    validReason text,
+    _start text,
+    _end text,
+    _type text
+);
+ALTER TABLE inb.dump_neo4j SET UNLOGGED;
