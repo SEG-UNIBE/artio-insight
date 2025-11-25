@@ -2,19 +2,19 @@
 =============================================
 Author:				Michael Kaiser
 Create date:		2025-10-19
-Description:		Materialized view for the kinds of events
+Description:		Table for the kinds of events
 Modification:
+2025-11-25  mkaiser     Changing the script to physical table
 =============================================
 */
-DROP MATERIALIZED VIEW IF EXISTS udm.kind;
+DROP TABLE IF EXISTS udm.kind;
 
-CREATE MATERIALIZED VIEW udm.kind AS
-(
-SELECT record_src,
-       kind,
-       COUNT(DISTINCT pubkey) AS user_count,
-       COUNT(event_id)        AS event_count
+SELECT *
+INTO udm.kind
+FROM (SELECT record_src,
+             kind,
+             COUNT(DISTINCT pubkey) AS user_count,
+             COUNT(event_id)        AS event_count
 
-FROM udm.events_aggregation
-GROUP BY kind, record_src
-    );
+      FROM udm.events_aggregation
+      GROUP BY kind, record_src) AS src;
