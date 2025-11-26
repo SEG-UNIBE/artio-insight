@@ -40,6 +40,11 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 	// do the version
 	rnr.Neo.Execute(`MERGE(s:Software {software: $software})`, map[string]any{"software": relay.Software()})
 
+	// do the nip support
+	for _, nip := range relay.Nip11Document.SupportedNIPs {
+		rnr.Neo.Execute(`MATCH(r:Relay), (n:NIP) WHERE r.name=$name and n.name=$nip MERGE (r)-[:IMPLEMENTS]->(n);`, map[string]any{"nip": nip, "name": relay.CleanName()})
+	}
+
 	// merge relation between relay and version
 	rnr.Neo.Execute(`MATCH(r:Relay), (s:Software) WHERE r.name=$name and s.software=$version MERGE (r)-[:USES_SOFTWARE]->(s);`, map[string]any{"version": relay.Software(), "name": relay.CleanName()})
 
@@ -74,7 +79,7 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 
 				pubkey, relays := helper.FindRelayForUser(evt)
 				for _, rel := range relays {
-					rnr.Neo.Execute(`MATCH(r:Relay), (u:User) WHERE r.name=$name and u.pubkey=$pubkey MERGE (u)-[:USES]->(r);`, map[string]any{"pubkey": pubkey, "name": rel})
+					rnr.Neo.Execute(`MATCH(r:Relay), (u:User) WHERE r.name=$name and u.pubkey=$pubkey MERGE (u)-[:USES]->(r);`, map[string]any{"pubkey": pubkey, "name": helper.CleanRelayName(rel)})
 				}
 			}
 		}
