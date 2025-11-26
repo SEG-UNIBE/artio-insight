@@ -41,8 +41,10 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 	rnr.Neo.Execute(`MERGE(s:Software {software: $software})`, map[string]any{"software": relay.Software()})
 
 	// do the nip support
-	for _, nip := range relay.Nip11Document.SupportedNIPs {
-		rnr.Neo.Execute(`MATCH(r:Relay), (n:NIP) WHERE r.name=$name and n.name=$nip MERGE (r)-[:IMPLEMENTS]->(n);`, map[string]any{"nip": nip, "name": relay.CleanName()})
+	if relay.Nip11Document != nil {
+		for _, nip := range relay.Nip11Document.SupportedNIPs {
+			rnr.Neo.Execute(`MATCH(r:Relay), (n:NIP) WHERE r.name=$name and n.name=$nip MERGE (r)-[:IMPLEMENTS]->(n);`, map[string]any{"nip": nip, "name": relay.CleanName()})
+		}
 	}
 
 	// merge relation between relay and version

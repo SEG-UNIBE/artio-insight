@@ -14,6 +14,8 @@ CleanRelayName cleans a relay name by removing any ws://, wss:// and more
 func CleanRelayName(name string) string {
 	name = strings.ReplaceAll(name, "ws://", "")
 	name = strings.ReplaceAll(name, "wss://", "")
+	name = strings.ReplaceAll(name, "http://", "")
+	name = strings.ReplaceAll(name, "https://", "")
 	name = strings.ReplaceAll(name, "/", "")
 	return name
 }
