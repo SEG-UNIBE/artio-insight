@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS inb.events_artiostr
     CONSTRAINT events_artiostr_pkey PRIMARY KEY (id)
 );
 
-ALTER TABLE inb.events_artiostr SET UNLOGGED;
+ALTER TABLE inb.events_artiostr
+    SET UNLOGGED;
 
 -- Table: public.logs
 DROP TABLE IF EXISTS inb.logs_artiostr;
@@ -44,7 +45,8 @@ CREATE TABLE IF NOT EXISTS inb.logs_artiostr
     CONSTRAINT logs_artiostr_pkey PRIMARY KEY (id)
 );
 
-ALTER TABLE inb.logs_artiostr SET UNLOGGED;
+ALTER TABLE inb.logs_artiostr
+    SET UNLOGGED;
 
 DROP TABLE IF EXISTS inb.events_artioinf;
 
@@ -64,7 +66,8 @@ CREATE TABLE IF NOT EXISTS inb.events_artioinf
     CONSTRAINT events_artioinf_pkey PRIMARY KEY (id)
 );
 
-ALTER TABLE inb.events_artioinf SET UNLOGGED;
+ALTER TABLE inb.events_artioinf
+    SET UNLOGGED;
 
 -- Table: public.logs
 DROP TABLE IF EXISTS inb.logs_artioinf;
@@ -81,20 +84,34 @@ CREATE TABLE IF NOT EXISTS inb.logs_artioinf
     CONSTRAINT logs_artioinf_pkey PRIMARY KEY (id)
 );
 
-ALTER TABLE inb.logs_artioinf SET UNLOGGED;
+ALTER TABLE inb.logs_artioinf
+    SET UNLOGGED;
 
 DROP TABLE IF EXISTS inb.dump_neo4j;
 CREATE TABLE inb.dump_neo4j
 (
     _id         text,
     _labels     text,
-    isValid text,
-    name       text,
-    pubkey text,
-    software text,
+    isValid     text,
+    name        text,
+    pubkey      text,
+    software    text,
     validReason text,
-    _start text,
-    _end text,
-    _type text
+    _start      text,
+    _end        text,
+    _type       text
 );
-ALTER TABLE inb.dump_neo4j SET UNLOGGED;
+ALTER TABLE inb.dump_neo4j
+    SET UNLOGGED;
+
+DROP TABLE IF EXISTS inb.nipkinds_nipfile;
+CREATE TABLE inb.nipkinds_nipfile
+(
+    kind        text,
+    name        text,
+    description text,
+    defined_in  text,
+    nip_name    text
+);
+ALTER TABLE inb.nipkinds_nipfile
+    SET UNLOGGED;
