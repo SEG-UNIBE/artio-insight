@@ -16,5 +16,3 @@ FROM (SELECT 'neo4j' AS record_src,
              name    AS relayaltname
       FROM rdv.dump_neo4j_sat_cur
       WHERE _labels = ':RelayAlternativeName') AS src;
-
-
