@@ -31,6 +31,12 @@ func (mgmt *Manager) Run(relays []string) {
 	mgmt.loadMap = make(map[string]bool)
 	mgmt.mapMutex = sync.RWMutex{}
 	mgmt.RelayQueue = new(Queue)
+
+	// push all NIPs
+	for i := range 100 {
+		mgmt.Neo.Execute(`MERGE(n:NIP {name: $nip})`, map[string]any{"nip": i})
+	}
+
 	for _, relay := range relays {
 		newMiner := NewMiner(relay)
 		newMiner.RecursionLevel = mgmt.MaxRecursion

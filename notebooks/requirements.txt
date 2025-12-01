@@ -1,0 +1,7 @@
+python-dotenv
+pandas~=2.3.3
+SQLAlchemy~=2.0.44
+dotenv
+psycopg2
+matplotlib
+seaborn
