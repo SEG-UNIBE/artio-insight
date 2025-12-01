@@ -23,6 +23,7 @@ go.work.sum
 
 # env file
 .env
+*.env
 
 # IDE Files
 .idea/
@@ -33,3 +34,9 @@ go.work.sum
 
 # Misc Files
 TODO.md
+
+# Python
+*.venv"
+.venv
+
+*.ipynb_checkpoints
