@@ -40,3 +40,5 @@ TODO.md
 .venv
 
 *.ipynb_checkpoints
+
+queries/
