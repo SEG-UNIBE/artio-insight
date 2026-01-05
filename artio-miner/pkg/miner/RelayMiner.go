@@ -40,6 +40,7 @@ func (rm *RelayMiner) Load() {
 	rm.Ips, rm.DnsInValidReason = helper.ValidateDNS(rm.CleanName())
 	if rm.DnsInValidReason != "" {
 		rm.IsValid = false
+		rm.InvalidReason = rm.DnsInValidReason
 		log.Println(rm.DnsInValidReason, ": ", rm.Relay)
 		return
 	}
@@ -60,6 +61,7 @@ func (rm *RelayMiner) Validate() {
 	rm.Ips, rm.DnsInValidReason = helper.ValidateDNS(rm.CleanName())
 	if rm.DnsInValidReason != "" {
 		rm.IsValid = false
+		rm.InvalidReason = rm.DnsInValidReason
 		log.Println(rm.DnsInValidReason, ": ", rm.Relay)
 		return
 	}
