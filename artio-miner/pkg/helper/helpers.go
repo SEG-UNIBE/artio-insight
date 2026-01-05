@@ -17,6 +17,8 @@ func CleanRelayName(name string) string {
 	name = strings.ReplaceAll(name, "http://", "")
 	name = strings.ReplaceAll(name, "https://", "")
 	name = strings.ReplaceAll(name, "/", "")
+	name = strings.ReplaceAll(name, " ", "")
+	name = strings.ReplaceAll(name, "\t", "")
 	return name
 }
 
