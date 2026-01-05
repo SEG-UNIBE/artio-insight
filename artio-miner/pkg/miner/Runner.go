@@ -56,6 +56,12 @@ func (rnr *Runner) handleRelay(relay *RelayMiner) {
 	// merge relation between relay and owner
 	rnr.Neo.Execute(`MATCH(r:Relay), (u:User) WHERE r.name=$name and u.pubkey=$pubkey MERGE (u)-[:OWNS]->(r);`, map[string]any{"pubkey": relay.PublicKey(), "name": relay.CleanName()})
 
+	// do the IP addresses
+	for _, ip := range relay.Ips {
+		rnr.Neo.Execute(`MERGE(i:IP {address: $address})`, map[string]any{"address": ip.String()})
+		rnr.Neo.Execute(`MATCH(r:Relay), (i:IP) WHERE r.name=$name and i.address=$address MERGE (r)-[:HAS_IP]->(i);`, map[string]any{"address": ip.String(), "name": relay.CleanName()})
+	}
+
 	if relay.RecursionLevel > 0 {
 		log.Printf("Runner %d: Found %d new Relays for possible mining on %s\n", rnr.Id, len(relay.NeighbourRelays), relay.Relay)
 		for _, rel := range relay.NeighbourRelays {

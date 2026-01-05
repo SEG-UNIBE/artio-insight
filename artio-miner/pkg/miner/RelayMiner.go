@@ -53,6 +53,16 @@ func (rm *RelayMiner) Load() {
 
 func (rm *RelayMiner) Validate() {
 	rm.IsValid, rm.InvalidReason = helper.ValidateURL(rm.Relay)
+	if !rm.IsValid {
+		log.Println(rm.InvalidReason, ": ", rm.Relay)
+		return
+	}
+	rm.Ips, rm.DnsInValidReason = helper.ValidateDNS(rm.CleanName())
+	if rm.DnsInValidReason != "" {
+		rm.IsValid = false
+		log.Println(rm.DnsInValidReason, ": ", rm.Relay)
+		return
+	}
 	return
 }
 
