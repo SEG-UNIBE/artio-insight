@@ -62,3 +62,18 @@ func ValidateURL(uri string) (bool, string) {
 	}
 	return true, ""
 }
+
+/*
+ValidateDNS resolves a hostname to an IP address
+*/
+func ValidateDNS(hostname string) ([]net.IP, string) {
+	var result []net.IP
+	ips, err := net.LookupIP(hostname)
+	if err != nil {
+		return result, "DNS resolution failed"
+	}
+	for _, ip := range ips {
+		result = append(result, ip)
+	}
+	return result, ""
+}
