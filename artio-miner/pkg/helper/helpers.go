@@ -17,6 +17,8 @@ func CleanRelayName(name string) string {
 	name = strings.ReplaceAll(name, "http://", "")
 	name = strings.ReplaceAll(name, "https://", "")
 	name = strings.ReplaceAll(name, "/", "")
+	name = strings.ReplaceAll(name, " ", "")
+	name = strings.ReplaceAll(name, "\t", "")
 	return name
 }
 
@@ -59,4 +61,19 @@ func ValidateURL(uri string) (bool, string) {
 		return false, "TOR network address"
 	}
 	return true, ""
+}
+
+/*
+ValidateDNS resolves a hostname to an IP address
+*/
+func ValidateDNS(hostname string) ([]net.IP, string) {
+	var result []net.IP
+	ips, err := net.LookupIP(hostname)
+	if err != nil {
+		return result, "DNS resolution failed"
+	}
+	for _, ip := range ips {
+		result = append(result, ip)
+	}
+	return result, ""
 }

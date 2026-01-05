@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"strings"
 
 	"github.com/SEG-UNIBE/artio-insight/relay-miner/pkg/helper"
@@ -15,16 +16,18 @@ import (
 RelayMiner Object to store the response of a single relay
 */
 type RelayMiner struct {
-	Relay           string
-	EventList       []*nostr.Event
-	nip11Result     []byte // store both the raw result and the parsed to keep information that might not be compliant with NIP-11
-	Nip11Document   *nip11.RelayInformationDocument
-	NeighbourRelays []string
-	loaded          bool
-	IsValid         bool
-	InvalidReason   string
-	DetectedBy      *RelayMiner
-	RecursionLevel  int
+	Relay            string
+	EventList        []*nostr.Event
+	nip11Result      []byte // store both the raw result and the parsed to keep information that might not be compliant with NIP-11
+	Nip11Document    *nip11.RelayInformationDocument
+	NeighbourRelays  []string
+	Ips              []net.IP
+	DnsInValidReason string
+	loaded           bool
+	IsValid          bool
+	InvalidReason    string
+	DetectedBy       *RelayMiner
+	RecursionLevel   int
 }
 
 func (rm *RelayMiner) Load() {
@@ -32,6 +35,12 @@ func (rm *RelayMiner) Load() {
 	rm.IsValid, rm.InvalidReason = helper.ValidateURL(rm.Relay)
 	if !rm.IsValid {
 		log.Println(rm.InvalidReason, ": ", rm.Relay)
+		return
+	}
+	rm.Ips, rm.DnsInValidReason = helper.ValidateDNS(rm.CleanName())
+	if rm.DnsInValidReason != "" {
+		rm.IsValid = false
+		log.Println(rm.DnsInValidReason, ": ", rm.Relay)
 		return
 	}
 
@@ -44,6 +53,16 @@ func (rm *RelayMiner) Load() {
 
 func (rm *RelayMiner) Validate() {
 	rm.IsValid, rm.InvalidReason = helper.ValidateURL(rm.Relay)
+	if !rm.IsValid {
+		log.Println(rm.InvalidReason, ": ", rm.Relay)
+		return
+	}
+	rm.Ips, rm.DnsInValidReason = helper.ValidateDNS(rm.CleanName())
+	if rm.DnsInValidReason != "" {
+		rm.IsValid = false
+		log.Println(rm.DnsInValidReason, ": ", rm.Relay)
+		return
+	}
 	return
 }
 
