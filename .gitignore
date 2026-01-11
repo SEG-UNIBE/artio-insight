@@ -42,3 +42,4 @@ TODO.md
 *.ipynb_checkpoints
 
 queries/
+*.pdf
