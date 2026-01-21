@@ -5,3 +5,5 @@ dotenv
 psycopg2
 matplotlib
 seaborn
+scipy
+squarify
