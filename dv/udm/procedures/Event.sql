@@ -35,6 +35,8 @@ BEGIN
                     FROM udm.events_aggregation$$;
         EXECUTE $$CREATE INDEX IF NOT EXISTS idx_udm_event_event_id ON udm.Event (event_id)$$;
         EXECUTE $$CREATE INDEX IF NOT EXISTS idx_udm_event_pubkey ON udm.Event (pubkey)$$;
+        EXECUTE $$CREATE INDEX IF NOT EXISTS idx_udm_event_kind ON udm.Event (kind)$$;
+
     ELSE
         -- Use a transaction-safe refresh
         BEGIN
