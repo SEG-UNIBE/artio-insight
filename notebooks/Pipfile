@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+pandas-stubs = "*"
+sqlalchemy = "~=2.0.44"
+dotenv = "*"
+psycopg2 = "*"
+matplotlib = "*"
+seaborn = "*"
+scipy = "*"
+squarify = "*"
+ipykernel = "*"
+pandas = "~=2.3.3"
+duckdb = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"
