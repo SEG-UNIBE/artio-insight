@@ -1,3 +1,8 @@
+# artio-miner
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/tag/SEG-UNIBE/artio-insight.svg?label=release)](https://github.com/SEG-UNIBE/artio-insight/releases)
+[![GitHub release date](https://img.shields.io/github/release-date/SEG-UNIBE/artio-insight.svg)](https://github.com/SEG-UNIBE/artio-insight/releases)
+
 <p align="center">
   <img src="identity/logo_insights.svg" />
 </p>
