@@ -4,13 +4,13 @@ services:
     container_name: ${GF_CONTAINER_NAME}
     depends_on:
       - database
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GF_PASSWORD}
     ports:
       - ${GF_PORT}:3000
     restart: always
     volumes:
       - artio_insight_gf_data:/var/lib/grafana
+    env_file:
+        - ./.env
 
   database:
     build:
@@ -26,18 +26,6 @@ services:
     restart: always
     volumes:
       - artio_insight_db_data:/var/lib/postgresql/data
-    networks:
-      - artio_insights_network
-
-  niptags:
-    build:
-      context: ./
-      dockerfile: ./nostr-protocol-nips_nip-tags/Dockerfile
-    container_name: niptags
-    depends_on:
-      - database
-    ports:
-      - 8080:8080
     networks:
       - artio_insights_network
 
