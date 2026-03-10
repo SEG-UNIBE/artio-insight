@@ -16,6 +16,7 @@ squarify = "*"
 ipykernel = "*"
 pandas = "~=2.3.3"
 duckdb = "*"
+pillow = ">=12.1.1"
 
 [dev-packages]
 
