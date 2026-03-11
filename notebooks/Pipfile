@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 python-dotenv = "*"
-pandas-stubs = "*"
 sqlalchemy = "~=2.0.44"
 dotenv = "*"
 psycopg2 = "*"
@@ -17,6 +16,7 @@ ipykernel = "*"
 pandas = "~=2.3.3"
 duckdb = "*"
 pillow = ">=12.1.1"
+pandas-stubs = "~=2.3.3"
 
 [dev-packages]
 
