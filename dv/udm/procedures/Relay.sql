@@ -35,7 +35,9 @@ BEGIN
                              relay_prep.record_src            AS relay_name,
                              COUNT(event_agg.event_id)        AS event_count,
                              COALESCE(MAX(deleted_ev.cnt), 0) AS event_deleted_count,
-                             COUNT(DISTINCT event_agg.pubkey) AS pubkey_count
+                             COUNT(DISTINCT event_agg.pubkey) AS pubkey_count,
+                             NULL AS is_valid,
+                             NULL AS valid_reason
                       FROM relay_prep
                                LEFT JOIN udm.events_aggregation event_agg ON event_agg.record_src = relay_prep.record_src
                                LEFT JOIN (SELECT record_src, COUNT(event_id) AS cnt
@@ -49,7 +51,9 @@ BEGIN
                              name AS relay_name,
                              NULL AS event_count,
                              NULL AS event_deleted_count,
-                             NULL AS pubkey_count
+                             NULL AS pubkey_count,
+                             isvalid AS is_valid,
+                             validreason AS valid_reason
                       FROM rdv.dump_neo4j_sat_cur
                       WHERE _labels = ':Relay'$$;
         EXECUTE 'CREATE INDEX IF NOT EXISTS idx_udm_relay_relay_id ON udm.Relay (relay_id)';
@@ -57,7 +61,7 @@ BEGIN
     ELSE
         BEGIN
             EXECUTE 'TRUNCATE TABLE udm.Relay';
-            EXECUTE $$INSERT INTO udm.Relay (record_src, relay_id, relay_name, event_count, event_deleted_count, pubkey_count)
+            EXECUTE $$INSERT INTO udm.Relay (record_src, relay_id, relay_name, event_count, event_deleted_count, pubkey_count, is_valid, valid_reason)
                           WITH relay_prep AS (SELECT DISTINCT record_src
                                               FROM udm.events_aggregation
                                               UNION
@@ -68,7 +72,9 @@ BEGIN
                                  relay_prep.record_src            AS relay_name,
                                  COUNT(event_agg.event_id)        AS event_count,
                                  COALESCE(MAX(deleted_ev.cnt), 0) AS event_deleted_count,
-                                 COUNT(DISTINCT event_agg.pubkey) AS pubkey_count
+                                 COUNT(DISTINCT event_agg.pubkey) AS pubkey_count,
+                                 NULL as is_valid,
+                                 NULL as valid_reason
                           FROM relay_prep
                                    LEFT JOIN udm.events_aggregation event_agg ON event_agg.record_src = relay_prep.record_src
                                    LEFT JOIN (SELECT record_src, COUNT(event_id) AS cnt
@@ -82,7 +88,9 @@ BEGIN
                                  name AS relay_name,
                                  NULL AS event_count,
                                  NULL AS event_deleted_count,
-                                 NULL AS pubkey_count
+                                 NULL AS pubkey_count,
+                                 isvalid AS is_valid,
+                                 validreason AS valid_reason
                           FROM rdv.dump_neo4j_sat_cur
                           WHERE _labels = ':Relay'$$;
         EXCEPTION
