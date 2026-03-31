@@ -12,5 +12,3 @@ GRANT USAGE ON SCHEMA udm TO udm_reader;
 
 GRANT ALL ON ALL TABLES IN SCHEMA udm TO udm_admin;
 GRANT USAGE ON SCHEMA udm TO udm_admin;
-
-CALL udm.run_all_loads(TRUE);
