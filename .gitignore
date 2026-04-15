@@ -44,3 +44,5 @@ TODO.md
 queries/
 *.pdf
 *.tex
+notebooks/svg/*
+notebooks/pdf/*
