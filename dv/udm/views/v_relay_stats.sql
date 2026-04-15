@@ -18,7 +18,8 @@ SELECT r.relay_id,
        ip.ip_address,
        ip.ip_type,
        nip.nip_name,
-       nip.nip_full_name
+       nip.nip_full_name,
+       s.software
 FROM udm.relay AS r
          LEFT JOIN udm.relayip AS rip
                    ON r.relay_id = rip.relay_id
@@ -28,4 +29,8 @@ FROM udm.relay AS r
                    ON r.relay_id = rnip.relay_id
          LEFT JOIN udm.nip AS nip
                    ON rnip.nip_id = nip.nip_id
+         LEFT JOIN udm.relaysoftware rs
+                   ON r.relay_id = rs.relay_id
+         LEFT JOIN udm.software s
+                   ON s.software_id = rs.software_id
     );
