@@ -1,7 +1,15 @@
 services:
+
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    pull_policy: always
+    restart: always
+    container_name: ${GF_CONTAINER_NAME}-renderer
+
   grafana:
     image: grafana/grafana
     container_name: ${GF_CONTAINER_NAME}
+    pull_policy: always
     depends_on:
       - database
     ports:
